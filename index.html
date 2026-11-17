@@ -1,0 +1,2713 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Via — Creator · Dreamer · Explorer</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS VARIABLES — single source of truth for the whole site
+       ============================================================ */
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --bg-nav: rgba(10, 10, 10, 0.92);
+      --text: #e8e0d4;
+      --text-muted: #8a8075;
+      --accent-rose: #c9847a;
+      --accent-sage: #7a9b87;
+      --accent-gold: #c9a96e;
+      --border: rgba(255, 255, 255, 0.07);
+      --border-hover: rgba(201, 169, 110, 0.35);
+      --font-head: 'Cormorant Garamond', serif;
+      --font-body: 'DM Sans', sans-serif;
+      --transition: 0.35s ease;
+      --radius: 12px;
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+      /* custom cursor */
+    }
+
+    /* Grain overlay — applied to every section via pseudo-element */
+    .grain::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    section {
+      position: relative;
+    }
+
+    section>* {
+      position: relative;
+      z-index: 2;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* Utility */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Fade-up animation (driven by IntersectionObserver) */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       CUSTOM CURSOR
+       ============================================================ */
+    #cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+
+    #cursor-ring {
+      width: 30px;
+      height: 30px;
+      border: 1.5px solid rgba(201, 169, 110, 0.5);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    }
+
+    body:hover #cursor-ring {
+      opacity: 1;
+    }
+
+    /* ============================================================
+       NAVBAR
+       ============================================================ */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1.4rem 0;
+      transition: background var(--transition), padding var(--transition), box-shadow var(--transition);
+    }
+
+    #navbar.scrolled {
+      background: var(--bg-nav);
+      padding: 0.9rem 0;
+      box-shadow: 0 1px 0 var(--border);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--font-head);
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo span {
+      color: var(--accent-gold);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color var(--transition);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent-gold);
+      transition: width var(--transition);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+      width: 100%;
+    }
+
+    /* Hobby dropdown */
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-dropdown>a::before {
+      content: '▾';
+      margin-left: 4px;
+      font-size: 0.65rem;
+      vertical-align: middle;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 14px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #161616;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0;
+      min-width: 130px;
+      list-style: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%) translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .nav-dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .dropdown-menu li a {
+      display: block;
+      padding: 0.45rem 1.2rem;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .dropdown-menu li a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .dropdown-menu li a::after {
+      display: none;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--text);
+      transition: transform var(--transition), opacity var(--transition);
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(6.5px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-6.5px) rotate(-45deg);
+    }
+
+    /* Mobile nav */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 10, 10, 0.98);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      list-style: none;
+      backdrop-filter: blur(12px);
+    }
+
+    .mobile-nav.open {
+      display: flex;
+    }
+
+    .mobile-nav a {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+
+    .mobile-nav a:hover {
+      color: var(--text);
+    }
+
+    /* ============================================================
+       HERO SECTION
+       ============================================================ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    /* Star canvas background */
+    #star-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-name {
+      font-family: var(--font-head);
+      font-size: clamp(5rem, 18vw, 11rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 0.9;
+      color: var(--text);
+      animation: heroFadeIn 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.75rem, 2vw, 0.9rem);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-top: 1.2rem;
+      animation: heroFadeIn 1.2s 0.3s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-tagline {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--text-muted);
+      margin-top: 2rem;
+      max-width: 680px;
+      min-height: 2.5rem;
+      animation: heroFadeIn 1.2s 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      animation: heroFadeIn 1s 1.2s ease forwards;
+      opacity: 0;
+      z-index: 2;
+    }
+
+    .hero-scroll-hint span {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--accent-gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+
+      0%,
+      100% {
+        opacity: 0.3;
+        transform: scaleY(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scaleY(1.15);
+      }
+    }
+
+    @keyframes heroFadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* ============================================================
+       MUSIC PLAYER (floating)
+       ============================================================ */
+    #music-player {
+      position: fixed;
+      bottom: 1.8rem;
+      right: 1.8rem;
+      z-index: 900;
+      background: #161616;
+      border: 1px solid var(--border);
+      border-radius: 60px;
+      padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      transition: transform var(--transition), box-shadow var(--transition);
+      cursor: none;
+    }
+
+    #music-player:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .player-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .player-btn:hover {
+      background: #d4b87a;
+      transform: scale(1.08);
+    }
+
+    .player-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: #0a0a0a;
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .player-title {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .player-artist {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .player-progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-width: 90px;
+    }
+
+    .player-progress {
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .player-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-gold);
+      border-radius: 2px;
+      transition: width 0.5s linear;
+    }
+
+    /* Equalizer bars shown when "playing" */
+    .equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--accent-gold);
+      animation: none;
+      height: 4px;
+      transition: height 0.3s;
+    }
+
+    .playing .eq-bar:nth-child(1) {
+      animation: eqAnim 0.6s 0s ease-in-out infinite alternate;
+    }
+
+    .playing .eq-bar:nth-child(2) {
+      animation: eqAnim 0.6s 0.1s ease-in-out infinite alternate;
+    }
+
+    .playing .eq-bar:nth-child(3) {
+      animation: eqAnim 0.6s 0.2s ease-in-out infinite alternate;
+    }
+
+    .playing .eq-bar:nth-child(4) {
+      animation: eqAnim 0.6s 0.15s ease-in-out infinite alternate;
+    }
+
+    .playing .eq-bar:nth-child(5) {
+      animation: eqAnim 0.6s 0.05s ease-in-out infinite alternate;
+    }
+
+    @keyframes eqAnim {
+      from {
+        height: 3px;
+      }
+
+      to {
+        height: 13px;
+      }
+    }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 5.5rem;
+      right: 1.8rem;
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      z-index: 901;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+      max-width: 240px;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       ABOUT SECTION
+       ============================================================ */
+    #about {
+      padding: 7rem 0;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .about-avatar {
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+      animation: avatarGlow 4s ease-in-out infinite alternate;
+      box-shadow: 0 0 0 1px var(--border),
+        0 0 40px rgba(201, 132, 122, 0.15),
+        0 0 80px rgba(122, 155, 135, 0.08);
+    }
+
+    .about-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: brightness(0.95) saturate(0.9);
+      transition: filter 0.4s ease, transform 0.4s ease;
+    }
+
+    .about-avatar:hover img {
+      filter: brightness(1) saturate(1);
+      transform: scale(1.04);
+    }
+
+    .about-avatar::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      animation: ringPulse 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes avatarGlow {
+      from {
+        box-shadow: 0 0 0 1px var(--border), 0 0 40px rgba(201, 132, 122, 0.15), 0 0 80px rgba(122, 155, 135, 0.08);
+      }
+
+      to {
+        box-shadow: 0 0 0 1px var(--border), 0 0 60px rgba(201, 132, 122, 0.25), 0 0 120px rgba(122, 155, 135, 0.15);
+      }
+    }
+
+    @keyframes ringPulse {
+
+      0%,
+      100% {
+        opacity: 0.4;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.04);
+      }
+    }
+
+    .about-name-tag {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    .about-text-wrap {
+      position: relative;
+    }
+
+    .about-quote-mark {
+      font-family: var(--font-head);
+      font-size: 8rem;
+      line-height: 0.5;
+      color: var(--accent-gold);
+      opacity: 0.18;
+      position: absolute;
+      top: -1rem;
+      left: -1.5rem;
+      user-select: none;
+    }
+
+    .about-quote {
+      font-family: var(--font-head);
+      font-size: clamp(1.05rem, 2vw, 1.22rem);
+      font-style: italic;
+      line-height: 1.85;
+      color: var(--text);
+      border-left: 2px solid var(--accent-gold);
+      padding-left: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .about-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.8rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-muted);
+      transition: border-color var(--transition), color var(--transition);
+    }
+
+    .tag:hover {
+      border-color: var(--accent-sage);
+      color: var(--accent-sage);
+    }
+
+    /* ============================================================
+       PROJECT SECTION
+       ============================================================ */
+    #project {
+      padding: 7rem 0;
+      background: #0d0d0d;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      cursor: none;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 0%, rgba(201, 169, 110, 0.06), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .project-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .project-card:hover::before {
+      opacity: 1;
+    }
+
+    .project-num {
+      font-family: var(--font-head);
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.05);
+      line-height: 1;
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+    }
+
+    .project-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .project-name {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+      color: var(--text);
+    }
+
+    .project-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 1.2rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .project-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .project-tag.rose {
+      border-color: rgba(201, 132, 122, 0.4);
+      color: var(--accent-rose);
+    }
+
+    .project-tag.sage {
+      border-color: rgba(122, 155, 135, 0.4);
+      color: var(--accent-sage);
+    }
+
+    .project-tag.gold {
+      border-color: rgba(201, 169, 110, 0.4);
+      color: var(--accent-gold);
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1.4rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      transition: gap var(--transition);
+    }
+
+    .project-link:hover {
+      gap: 0.7rem;
+    }
+
+    /* ============================================================
+       EDUCATION SECTION
+       ============================================================ */
+    #education {
+      padding: 7rem 0;
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 3.5rem;
+      padding-left: 2.5rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+      /* animated fill driven by JS */
+    }
+
+    .timeline-line-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 0%;
+      background: linear-gradient(to bottom, var(--accent-gold), var(--accent-sage));
+      transition: height 1.2s ease;
+      z-index: 1;
+    }
+
+    .edu-item {
+      position: relative;
+      margin-bottom: 3rem;
+    }
+
+    .edu-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .edu-dot {
+      position: absolute;
+      left: -2.5rem;
+      top: 0.3rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent-gold);
+      transform: translateX(-4.5px);
+      transition: background var(--transition), transform var(--transition);
+      z-index: 2;
+    }
+
+    .edu-item:hover .edu-dot {
+      background: var(--accent-gold);
+      transform: translateX(-4.5px) scale(1.3);
+    }
+
+    .edu-year {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 0.3rem;
+    }
+
+    .edu-school {
+      font-family: var(--font-head);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .edu-major {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .edu-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 560px;
+    }
+
+    /* ============================================================
+       HOBBY SECTION
+       ============================================================ */
+    #hobby {
+      padding: 7rem 0;
+      background: #0d0d0d;
+    }
+
+    .hobby-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-top: 3rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: color var(--transition);
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--accent-gold);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+    }
+
+    .tab-btn.active::after {
+      transform: scaleX(1);
+    }
+
+    .tab-panel {
+      display: none;
+      animation: tabSlide 0.4s ease;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes tabSlide {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Art tab — sketchbook journal grid */
+    .art-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .art-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+
+    .art-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .art-thumb {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      background: #161616;
+    }
+
+    .art-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: brightness(0.92) saturate(0.85);
+      transition: transform 0.6s ease, filter 0.4s ease;
+    }
+
+    .art-card:hover .art-thumb img {
+      transform: scale(1.05);
+      filter: brightness(1) saturate(1);
+    }
+
+    .art-body {
+      padding: 1.4rem 1.4rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      flex: 1;
+    }
+
+    .art-num {
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+    }
+
+    .art-title {
+      font-family: var(--font-head);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text);
+      display: none;
+      /* titles replaced by captions */
+    }
+
+    .art-desc {
+      font-family: var(--font-head);
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    /* Song tab */
+    .playlist {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 640px;
+    }
+
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      transition: background var(--transition);
+      cursor: none;
+    }
+
+    .playlist-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .playlist-item.active-song {
+      background: rgba(201, 169, 110, 0.08);
+      border-left: 2px solid var(--accent-gold);
+    }
+
+    .playlist-item.active-song .playlist-song {
+      color: var(--accent-gold);
+    }
+
+    .playlist-item.active-song .playlist-num {
+      display: none;
+    }
+
+    .playlist-item.active-song .playlist-play-icon {
+      display: block;
+    }
+
+    .playlist-num {
+      width: 24px;
+      text-align: right;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .playlist-item:hover .playlist-num {
+      display: none;
+    }
+
+    .playlist-play-icon {
+      display: none;
+      width: 24px;
+      flex-shrink: 0;
+      color: var(--accent-gold);
+      font-size: 0.9rem;
+    }
+
+    .playlist-item:hover .playlist-play-icon {
+      display: block;
+    }
+
+    .playlist-cover {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: border-radius 0.3s ease;
+    }
+
+    @keyframes spin-vinyl {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .playlist-cover.spinning {
+      animation: spin-vinyl 3s linear infinite;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(201, 169, 110, 0.4);
+    }
+
+    .cov-1 {
+      background: linear-gradient(135deg, #1f1535, #3a2060);
+    }
+
+    .cov-2 {
+      background: linear-gradient(135deg, #1f1535, #3a2060);
+    }
+
+    .cov-3 {
+      background: linear-gradient(135deg, #0d1a2a, #1a3a5c);
+    }
+
+    .cov-4 {
+      background: linear-gradient(135deg, #1a0d2a, #3a1f5c);
+    }
+
+    .cov-5 {
+      background: linear-gradient(135deg, #0a1f1a, #1f4a3a);
+    }
+
+    .playlist-info {
+      flex: 1;
+    }
+
+    .playlist-song {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .playlist-artist {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .playlist-dur {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* Nature tab */
+    .nature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    /* Nature photo gallery */
+    .nature-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .nature-photo-wrap {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 3/4;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      cursor: none;
+    }
+
+    .nature-photo-wrap:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .nature-photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      transition: transform 0.6s ease;
+      filter: brightness(0.88) saturate(0.9);
+    }
+
+    .nature-photo-wrap:hover img {
+      transform: scale(1.05);
+      filter: brightness(1) saturate(1);
+    }
+
+    .nature-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity var(--transition);
+      display: flex;
+      align-items: flex-end;
+      padding: 1.4rem;
+    }
+
+    .nature-photo-wrap:hover .nature-photo-overlay {
+      opacity: 1;
+    }
+
+    .nature-photo-caption {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .nature-photo-title {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .nature-photo-loc {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+    }
+
+    /* Nature journal entries */
+    .nature-journal {
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+    }
+
+    .journal-entry {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .journal-entry--reverse {
+      direction: rtl;
+    }
+
+    .journal-entry--reverse>* {
+      direction: ltr;
+    }
+
+    .journal-photo-wrap {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 3/4;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+
+    .journal-photo-wrap:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .journal-photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: brightness(0.9) saturate(0.88);
+      transition: transform 0.6s ease, filter 0.4s ease;
+    }
+
+    .journal-photo-wrap:hover img {
+      transform: scale(1.04);
+      filter: brightness(1) saturate(1);
+    }
+
+    .journal-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .journal-num {
+      font-family: var(--font-head);
+      font-size: 5rem;
+      font-weight: 300;
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.05);
+      user-select: none;
+    }
+
+    .journal-quote {
+      font-family: var(--font-head);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.9;
+      color: var(--text);
+      border-left: 2px solid var(--accent-gold);
+      padding-left: 1.4rem;
+      margin: 0;
+      position: relative;
+    }
+
+    .nature-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .nature-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+    }
+
+    .nature-thumb {
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nature-thumb-1 {
+      background: linear-gradient(160deg, #0d1a2a 0%, #1a3a5c 40%, #0a2a1a 70%, #0a0a0a 100%);
+    }
+
+    .nature-thumb-2 {
+      background: linear-gradient(160deg, #0a1a2a 0%, #0d3550 40%, #0a2a1a 70%, #163520 100%);
+    }
+
+    .nature-thumb-3 {
+      background: linear-gradient(160deg, #0a1a0a 0%, #1a3a1a 40%, #2a4a0a 70%, #0d1f0d 100%);
+    }
+
+    .nature-thumb-icon {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .nature-body {
+      padding: 1.2rem;
+      background: var(--bg-card);
+    }
+
+    .nature-name {
+      font-family: var(--font-head);
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+
+    .nature-loc {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-sage);
+      margin-bottom: 0.6rem;
+    }
+
+    .nature-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .footer-logo span {
+      color: var(--accent-gold);
+    }
+
+    .footer-copy {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-socials {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+    }
+
+    .social-link {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: border-color var(--transition), color var(--transition), transform var(--transition);
+    }
+
+    .social-link:hover {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+      transform: translateY(-2px);
+    }
+
+    .social-link svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* ============================================================
+       CONTACT SECTION
+       ============================================================ */
+    #contact {
+      padding: 7rem 0 6rem;
+    }
+
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .contact-info h2 {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+      color: var(--text);
+    }
+
+    .contact-info h2 span {
+      color: var(--accent-gold);
+    }
+
+    .contact-info p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .contact-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .contact-detail-item svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--accent-gold);
+      flex-shrink: 0;
+    }
+
+    /* Form */
+    .contact-form {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+      resize: none;
+      box-sizing: border-box;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent-gold);
+      background: rgba(201, 169, 110, 0.05);
+      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.08);
+    }
+
+    .form-group textarea {
+      height: 130px;
+    }
+
+    .form-submit {
+      width: 100%;
+      padding: 0.95rem;
+      background: transparent;
+      border: 1px solid var(--accent-gold);
+      border-radius: 8px;
+      color: var(--accent-gold);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: none;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    }
+
+    .form-submit:hover {
+      background: var(--accent-gold);
+      color: #0a0a0a;
+      transform: translateY(-1px);
+    }
+
+    .form-submit:active {
+      transform: translateY(0);
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 2rem 0 1rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .form-success .success-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 900px) {
+      .project-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .about-avatar-wrap {
+        flex-direction: row;
+      }
+
+      .contact-wrap {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .art-grid,
+      .nature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nature-gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .journal-entry,
+      .journal-entry--reverse {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        gap: 1.5rem;
+      }
+
+      .about-avatar {
+        width: 180px;
+        height: 180px;
+      }
+
+      .about-avatar-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #music-player {
+        right: 1rem;
+        bottom: 1rem;
+      }
+
+      .contact-form {
+        padding: 1.8rem 1.2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .tab-btn {
+        padding: 0.6rem 1.1rem;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================================================================
+     CUSTOM CURSOR
+     ================================================================ -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ================================================================
+     NAVBAR
+     ================================================================ -->
+  <nav id="navbar">
+    <div class="container nav-inner">
+      <a href="#hero" class="nav-logo">Via<span></span></a>
+
+      <ul class="nav-links">
+        <li><a href="#about" class="nav-link">About Me</a></li>
+        <li><a href="#project" class="nav-link">My Project</a></li>
+        <li><a href="#education" class="nav-link">Education</a></li>
+        <li class="nav-dropdown">
+          <a href="#hobby" class="nav-link">Hobby</a>
+          <ul class="dropdown-menu">
+            <li><a href="#hobby" onclick="switchTab('art')">Art</a></li>
+            <li><a href="#hobby" onclick="switchTab('song')">Song</a></li>
+            <li><a href="#hobby" onclick="switchTab('nature')">Nature</a></li>
+          </ul>
+        </li>
+        <li><a href="#contact" class="nav-link">Contact Me</a></li>
+      </ul>
+
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav Overlay -->
+  <ul class="mobile-nav" id="mobileNav">
+    <li><a href="#about" onclick="closeMobile()">About Me</a></li>
+    <li><a href="#project" onclick="closeMobile()">My Project</a></li>
+    <li><a href="#education" onclick="closeMobile()">Education</a></li>
+    <li><a href="#hobby" onclick="closeMobile()">Hobby</a></li>
+    <li><a href="#contact" onclick="closeMobile()">Contact Me</a></li>
+  </ul>
+
+  <!-- ================================================================
+     HERO SECTION
+     ================================================================ -->
+  <section id="hero" class="grain">
+    <canvas id="star-canvas"></canvas>
+
+    <div class="hero-content">
+      <h1 class="hero-name">Via</h1>
+      <p class="hero-subtitle">Creator &nbsp;·&nbsp; Dreamer &nbsp;·&nbsp; Explorer</p>
+      <p class="hero-tagline" id="typewriter"></p>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     FLOATING MUSIC PLAYER
+     ================================================================ -->
+  <!--
+  AUDIO NOTE FOR VIA:
+  Replace the src="" below with the actual path to your mp3 file.
+  Example: src="Stand By Me.mp3"
+  The file should be placed in the same folder as this index.html.
+-->
+  <audio id="audio-el" src="Stand By Me.mp3" preload="metadata"></audio>
+
+  <div id="music-player">
+    <button class="player-btn" id="playBtn" aria-label="Play/Pause">
+      <!-- Play icon (shown when paused) -->
+      <svg id="icon-play" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+      <!-- Pause icon (hidden when paused) -->
+      <svg id="icon-pause" viewBox="0 0 24 24" style="display:none">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+      </svg>
+    </button>
+
+    <div class="player-info">
+      <span class="player-title" id="playerTitle">Stand by Me</span>
+      <span class="player-artist" id="playerArtist">Oasis</span>
+    </div>
+
+    <div class="player-progress-wrap">
+      <div class="player-progress" id="progressBar">
+        <div class="player-progress-bar" id="progressFill"></div>
+      </div>
+      <div class="equalizer" id="equalizer">
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">🎵 Tambahkan file audio <strong>Stand By Me.mp3</strong> ke folder ini</div>
+
+  <!-- ================================================================
+     ABOUT SECTION
+     ================================================================ -->
+  <section id="about" class="grain">
+    <div class="container">
+      <div class="about-grid fade-up">
+        <!-- Left: avatar -->
+        <div class="about-avatar-wrap">
+          <div class="about-avatar">
+            <img src="avatar.jpg" alt="Via — foto profil" loading="eager" />
+          </div>
+          <span class="about-name-tag">Via</span>
+        </div>
+
+        <!-- Right: text -->
+        <div class="about-text-wrap">
+          <span class="section-label">About Me</span>
+          <h2 class="section-title">Seorang jiwa yang<br>menemukan tenang di alam</h2>
+          <div style="position:relative">
+            <span class="about-quote-mark">"</span>
+            <p class="about-quote">
+              aku Via, gadis yang menemukan ketenangannya bukan di keramaian melainkan di hamparan alam yang sunyi,
+              yang suka healing untuk merapikan hati yang lelah, suka menggambar untuk mengubah rasa yang tak terucap
+              menjadi karya yang hidup, serta suka traveling dan menyusuri gunung, pantai, dan hutan karena bagiku
+              setiap perjalanan adalah puisi, setiap pemandangan adalah inspirasi, dan setiap hembusan angin di alam
+              adalah cara semesta mengingatkanku untuk tetap bersyukur, bermimpi, dan berkarya dengan hati yang tenang.
+            </p>
+          </div>
+          <div class="about-tags">
+            <span class="tag"> Drawing</span>
+            <span class="tag"> Hiking</span>
+            <span class="tag"> Beach Lover</span>
+            <span class="tag"> Nature</span>
+            <span class="tag"> Music</span>
+            <span class="tag"> Traveling</span>
+            <span class="tag"> Healing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     PROJECT SECTION
+     ================================================================ -->
+  <section id="project" class="grain">
+    <div class="container">
+      <div class="fade-up">
+        <span class="section-label">My Project</span>
+        <h2 class="section-title">Karya yang Lahir dari<br>Perjalanan &amp; Perasaan</h2>
+      </div>
+
+      <div class="project-grid">
+        <!-- Project 1 -->
+        <div class="project-card fade-up">
+          <span class="project-num">01</span>
+          <div class="project-icon"></div>
+          <h3 class="project-name">Alam Nusantara</h3>
+          <p class="project-desc">
+            Jurnal foto perjalanan menelusuri keindahan alam Indonesia — dari puncak gunung berselimut kabut
+            hingga pantai dengan pasir seputih kapas. Setiap foto bercerita, setiap momen diabadikan dengan hati.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag gold">Photography</span>
+            <span class="project-tag sage">Travel</span>
+            <span class="project-tag">Journal</span>
+          </div>
+          <a href="#" class="project-link"></a>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card fade-up">
+          <span class="project-num">02</span>
+          <div class="project-icon"></div>
+          <h3 class="project-name">Rasa yang Tak Terucap</h3>
+          <p class="project-desc">
+            Koleksi seni digital yang menerjemahkan emosi — rindu, syukur, damai — ke dalam visual yang hidup.
+            Sebuah bahasa visual untuk perasaan yang terlalu dalam untuk diungkapkan dengan kata-kata.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag rose">Digital Art</span>
+            <span class="project-tag">Illustration</span>
+            <span class="project-tag sage">Emotion</span>
+          </div>
+          <a href="#" class="project-link"></a>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-card fade-up">
+          <span class="project-num">03</span>
+          <div class="project-icon"></div>
+          <h3 class="project-name">Jalan Pulang</h3>
+          <p class="project-desc">
+            Blog perjalanan personal yang merekam cerita di balik setiap langkah — bukan hanya destinasi,
+            tapi perasaan, pelajaran, dan kedamaian yang ditemukan di setiap tikungan jalan.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag gold">Blog</span>
+            <span class="project-tag">Writing</span>
+            <span class="project-tag rose">Personal</span>
+          </div>
+          <a href="#" class="project-link"></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     EDUCATION SECTION
+     ================================================================ -->
+  <section id="education" class="grain">
+    <div class="container">
+      <div class="fade-up">
+        <span class="section-label">Education</span>
+        <h2 class="section-title">Jejak Ilmu yang<br>Membentuk Karya</h2>
+      </div>
+
+      <div class="timeline fade-up" id="timeline">
+        <div class="timeline-line-fill" id="timelineFill"></div>
+
+        <!-- Entry 1 -->
+        <div class="edu-item">
+          <div class="edu-dot"></div>
+          <div class="edu-year">2025 — Sekarang</div>
+          <div class="edu-school">SMK Negeri 5 Malang - Pemrograman Perangkat Lunak N Gim</div>
+          <div class="edu-major"></div>
+          <div class="edu-desc">
+          </div>
+        </div>
+
+        <!-- Entry 2 -->
+        <div class="edu-item">
+          <div class="edu-dot"></div>
+          <div class="edu-year">2023 — 2025</div>
+          <div class="edu-school">SMP Muhammadiyah 1 Malang</div>
+          <div class="edu-major"></div>
+          <div class="edu-desc">
+          </div>
+        </div>
+
+        <!-- Entry 3 -->
+        <div class="edu-item">
+          <div class="edu-dot"></div>
+          <div class="edu-year">2020 — 2023</div>
+          <div class="edu-school">SD Bareng 1 Malang</div>
+          <div class="edu-major"></div>
+          <div class="edu-desc">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     HOBBY SECTION
+     ================================================================ -->
+  <section id="hobby" class="grain">
+    <div class="container">
+      <div class="fade-up">
+        <span class="section-label">Hobby</span>
+        <h2 class="section-title">Hal-hal yang Membuat<br>Hati Menjadi Tenang</h2>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="hobby-tabs fade-up">
+        <button class="tab-btn active" onclick="switchTab('art')" id="tab-art"> Art</button>
+        <button class="tab-btn" onclick="switchTab('song')" id="tab-song"> Song</button>
+        <button class="tab-btn" onclick="switchTab('nature')" id="tab-nature"> Nature</button>
+      </div>
+
+      <!-- ART TAB -->
+      <div class="tab-panel active fade-up" id="panel-art">
+        <div class="art-grid">
+
+          <!-- Artwork 1: Otak & Hati -->
+          <div class="art-card">
+            <div class="art-thumb">
+              <img src="art1.jpg" alt="Gambar setengah otak biru dan setengah hati merah yang menyatu, karya Via"
+                loading="lazy" />
+            </div>
+            <div class="art-body">
+              <span class="art-num">Brain</span>
+              <p class="art-desc">
+                Karya ini menggambarkan setengah otak berwarna biru dan setengah hati berwarna merah yang menyatu. Otak
+                belajar memahami, hati belajar menerimanya.
+              </p>
+            </div>
+          </div>
+
+          <!-- Artwork 2: Sailor Song -->
+          <div class="art-card">
+            <div class="art-thumb">
+              <img src="art2.jpg"
+                alt="Ilustrasi Sailor Song — seseorang kecil di laut dikelilingi tentakel gurita raksasa, karya Via"
+                loading="lazy" />
+            </div>
+            <div class="art-body">
+              <span class="art-num">Sea</span>
+              <p class="art-desc">
+                Karya ini terinspirasi dari lagu Sailor Song, tentang seseorang yang kecil di tengah laut yang luas,
+                dikelilingi tentakel gurita raksasa yang seolah menggambarkan perasaan yang besar dan sulit dijelaskan.
+              </p>
+            </div>
+          </div>
+
+          <!-- Artwork 3: Mata -->
+          <div class="art-card">
+            <div class="art-thumb">
+              <img src="art3.jpg" alt="Gambar mata dengan air mata jatuh di dalam bingkai geometris, karya Via"
+                loading="lazy" />
+            </div>
+            <div class="art-body">
+              <span class="art-num">Eye</span>
+              <p class="art-desc">
+                Mata adalah jendela hati. Lewat gambar ini aku ingin menggambarkan bahwa tidak semua rasa harus
+                diucapkan dengan kata-kata. Ada rasa yang hanya bisa dipahami lewat tatapan, lewat air mata yang jatuh
+                diam-diam, dan lewat diam yang panjang.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SONG TAB -->
+      <div class="tab-panel" id="panel-song">
+        <div class="playlist fade-up">
+          <div class="playlist-item" data-src="Stand By Me.mp3" data-title="Stand by Me" data-artist="Oasis">
+            <span class="playlist-num">1</span>
+            <span class="playlist-play-icon">▶</span>
+            <div class="playlist-cover cov-1">🎸</div>
+            <div class="playlist-info">
+              <div class="playlist-song">Stand by Me</div>
+              <div class="playlist-artist">Oasis</div>
+            </div>
+            <span class="playlist-dur">3:57</span>
+          </div>
+          <div class="playlist-item" data-src="Wonderwall.mp3" data-title="Wonderwall" data-artist="Oasis">
+            <span class="playlist-num">2</span>
+            <span class="playlist-play-icon">▶</span>
+            <div class="playlist-cover cov-2">🎸</div>
+            <div class="playlist-info">
+              <div class="playlist-song">Wonderwall</div>
+              <div class="playlist-artist">Oasis</div>
+            </div>
+            <span class="playlist-dur">4:18</span>
+          </div>
+          <div class="playlist-item" data-src="The Night We Met.mp3" data-title="The Night We Met"
+            data-artist="Lord Huron">
+            <span class="playlist-num">3</span>
+            <span class="playlist-play-icon">▶</span>
+            <div class="playlist-cover cov-3">🌙</div>
+            <div class="playlist-info">
+              <div class="playlist-song">The Night We Met</div>
+              <div class="playlist-artist">Lord Huron</div>
+            </div>
+            <span class="playlist-dur">3:28</span>
+          </div>
+          <div class="playlist-item" data-src="Somewhere Only We Know.mp3" data-title="Somewhere Only We Know"
+            data-artist="Keane">
+            <span class="playlist-num">4</span>
+            <span class="playlist-play-icon">▶</span>
+            <div class="playlist-cover cov-4">🌿</div>
+            <div class="playlist-info">
+              <div class="playlist-song">Somewhere Only We Know</div>
+              <div class="playlist-artist">Keane</div>
+            </div>
+            <span class="playlist-dur">3:57</span>
+          </div>
+          <div class="playlist-item" data-src="Yellow.mp3" data-title="Yellow" data-artist="Coldplay">
+            <span class="playlist-num">5</span>
+            <span class="playlist-play-icon">▶</span>
+            <div class="playlist-cover cov-5">💛</div>
+            <div class="playlist-info">
+              <div class="playlist-song">Yellow</div>
+              <div class="playlist-artist">Coldplay</div>
+            </div>
+            <span class="playlist-dur">4:29</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NATURE TAB -->
+      <div class="tab-panel" id="panel-nature">
+
+        <!-- Personal Photo Journal -->
+        <div class="nature-journal fade-up">
+
+          <!-- Entry 1: Mountain -->
+          <div class="journal-entry">
+            <div class="journal-photo-wrap">
+              <img src="photo1.jpg"
+                alt="Via duduk di atas batu besar di puncak gunung, latar belakang lembah hijau dan langit biru"
+                loading="lazy" />
+            </div>
+            <div class="journal-text">
+              <span class="journal-num">01</span>
+              <blockquote class="journal-quote">
+                "Bukan soal seberapa tinggi aku mendaki, tapi soal seberapa tenang aku saat sampai di atas. Semua lelah
+                terbayar lunas dengan langit biru dan hamparan hijau sejauh mata memandang."
+              </blockquote>
+            </div>
+          </div>
+
+          <!-- Entry 2: Srikandi -->
+          <div class="journal-entry journal-entry--reverse">
+            <div class="journal-photo-wrap">
+              <img src="photo2.jpg" alt="Via berdiri di depan batu besar bertuliskan Srikandi, ditemani aliran sungai"
+                loading="lazy" />
+            </div>
+            <div class="journal-text">
+              <span class="journal-num">02</span>
+              <blockquote class="journal-quote">
+                "Berdiri di bawah batu besar Srikandi, ditemani gemericik air yang tak pernah berhenti mengalir. Di sini
+                aku belajar dari air, sekeras apapun batu yang menghalangi, air akan tetap menemukan jalannya untuk
+                terus mengalir."
+              </blockquote>
+            </div>
+          </div>
+
+          <div class="journal-entry">
+            <div class="journal-photo-wrap">
+              <img src="photo3.jpg" alt="Via berdiri di antara karang dan deburan ombak di tepi pantai"
+                loading="lazy" />
+            </div>
+            <div class="journal-text">
+              <span class="journal-num">03</span>
+              <blockquote class="journal-quote">
+                "Di antara karang dan deburan ombak, aku belajar untuk berhenti sejenak dan menikmati tenang. Bukan
+                hanya tentang foto, tapi tentang merasa bebas. Bebas dari pikiran yang selalu ramai, bebas dari rasa
+                takut yang sering menahan langkahku. Di sini, aku tidak perlu menjadi siapa-siapa. Aku hanya perlu
+                menjadi diriku sendiri, berdiri dengan tenang, dan membiarkan laut mengajarkanku cara untuk melepaskan."
+              </blockquote>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================
+     CONTACT SECTION
+     ================================================================ -->
+  <section id="contact" class="grain">
+    <div class="container">
+
+      <div class="section-header fade-up">
+        <span class="section-label">Contact Me</span>
+      </div>
+
+      <div class="contact-wrap fade-up">
+
+        <!-- Left: info -->
+        <div class="contact-info">
+          <h2>Kirimkan<br><span>Pesanmu.</span></h2>
+          <p>Halo! Kalau kamu ingin berkolaborasi, berbagi cerita, atau sekadar menyapa? jangan ragu untuk menghubungi
+            Via. Setiap pesan adalah percakapan baru yang berharga. </p>
+
+          <div class="contact-detail">
+            <div class="contact-detail-item">
+              <!-- envelope icon -->
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+              </svg>
+              <span>viiiaa00@gmail.com</span>
+            </div>
+            <div class="contact-detail-item">
+              <!-- instagram icon -->
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.333 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.333-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.333-2.633 1.308-3.608C4.516 2.497 5.783 2.225 7.15 2.163 8.416 2.105 8.796 2.163 12 2.163zm0-2.163c-3.259 0-3.667.014-4.947.072C5.69.273 4.345.577 3.14 1.785 1.933 2.993 1.63 4.338 1.558 5.69.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.072 1.352.376 2.697 1.584 3.905C2.864 22.06 4.21 22.364 5.562 22.436c1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.352-.072 2.697-.376 3.905-1.584 1.208-1.208 1.512-2.553 1.584-3.905.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.072-1.352-.376-2.697-1.584-3.905C19.69.577 18.345.273 16.993.2 15.713.014 15.305 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+              </svg>
+              <span>@m4li0vi___</span>
+            </div>
+            <div class="contact-detail-item">
+              <!-- location icon -->
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+              <span>Malang, Indonesia</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: form -->
+        <div class="contact-form">
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="cf-name">Nama</label>
+              <input type="text" id="cf-name" name="name" placeholder="Siapa namamu?" autocomplete="off" required />
+            </div>
+            <div class="form-group">
+              <label for="cf-email">Email <span
+                  style="color:var(--text-muted);font-size:0.72rem;text-transform:none;">(opsional)</span></label>
+              <input type="email" id="cf-email" name="email" placeholder="email@kamu.com" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label for="cf-message">Pesan</label>
+              <textarea id="cf-message" name="message" placeholder="Tulis pesanmu di sini…" required></textarea>
+            </div>
+            <button type="submit" class="form-submit">✉ &nbsp; Kirim Pesan</button>
+          </form>
+
+          <!-- Success state -->
+          <div class="form-success" id="formSuccess">
+            <span class="success-icon">🌿</span>
+            <strong style="color:var(--text);display:block;font-size:1.1rem;margin-bottom:0.4rem;">Pesan
+              terkirim!</strong>
+            Terima kasih sudah menyapa, Via akan segera membalasmu. ✨
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     FOOTER
+     ================================================================ -->
+  <footer>
+    <div class="container">
+      <a href="#hero" class="footer-logo">Via Agustin<span></span></a>
+      <p class="footer-copy">2026</p>
+      <div class="footer-socials">
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+  <script>
+    /* ----------------------------------------------------------------
+       CUSTOM CURSOR
+       ---------------------------------------------------------------- */
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
+    });
+
+    // Ring follows with lag
+    (function animateRing() {
+      ringX += (mouseX - ringX) * 0.14;
+      ringY += (mouseY - ringY) * 0.14;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    })();
+
+    // Enlarge ring on interactive elements
+    document.querySelectorAll('a, button, .project-card, .playlist-item, .art-card, .nature-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.width = '52px';
+        ring.style.height = '52px';
+        ring.style.borderColor = 'rgba(201,169,110,0.7)';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.width = '30px';
+        ring.style.height = '30px';
+        ring.style.borderColor = 'rgba(201,169,110,0.4)';
+      });
+    });
+
+    /* ----------------------------------------------------------------
+       NAVBAR: solid on scroll + active link
+       ---------------------------------------------------------------- */
+    const navbar = document.getElementById('navbar');
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+      // Solid nav
+      if (window.scrollY > 80) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+
+      // Active link
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      });
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ----------------------------------------------------------------
+       HAMBURGER / MOBILE NAV
+       ---------------------------------------------------------------- */
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+      document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+    });
+
+    function closeMobile() {
+      hamburger.classList.remove('open');
+      mobileNav.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    /* ----------------------------------------------------------------
+       STAR CANVAS (hero background)
+       ---------------------------------------------------------------- */
+    (function initStars() {
+      const canvas = document.getElementById('star-canvas');
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      const COUNT = 180;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      function createStars() {
+        stars = [];
+        for (let i = 0; i < COUNT; i++) {
+          stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.3 + 0.2,
+            alpha: Math.random(),
+            speed: Math.random() * 0.004 + 0.001,
+            phase: Math.random() * Math.PI * 2,
+          });
+        }
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+          const a = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,240,${a})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      createStars();
+      requestAnimationFrame(draw);
+      window.addEventListener('resize', () => { resize(); createStars(); });
+    })();
+
+    /* ----------------------------------------------------------------
+       TYPEWRITER EFFECT (hero tagline)
+       ---------------------------------------------------------------- */
+    (function typewriter() {
+      const el = document.getElementById('typewriter');
+      const txt = 'Setiap perjalanan adalah puisi, setiap pemandangan adalah inspirasi.';
+      let i = 0;
+
+      function type() {
+        if (i <= txt.length) {
+          el.textContent = txt.slice(0, i);
+          i++;
+          setTimeout(type, 45);
+        }
+      }
+
+      // Start after hero fade-in
+      setTimeout(type, 1200);
+    })();
+
+    /* ----------------------------------------------------------------
+       INTERSECTION OBSERVER — fade-up elements
+       ---------------------------------------------------------------- */
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    fadeEls.forEach(el => observer.observe(el));
+
+    /* ----------------------------------------------------------------
+       EDUCATION TIMELINE LINE DRAW
+       ---------------------------------------------------------------- */
+    const timelineFill = document.getElementById('timelineFill');
+    const timelineEl = document.getElementById('timeline');
+    const tlObserver = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        timelineFill.style.height = '100%';
+        tlObserver.unobserve(timelineEl);
+      }
+    }, { threshold: 0.1 });
+    tlObserver.observe(timelineEl);
+
+    /* ----------------------------------------------------------------
+       HOBBY TABS
+       ---------------------------------------------------------------- */
+    function switchTab(name) {
+      // Deactivate all buttons and panels
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+      // Activate selected
+      document.getElementById('tab-' + name).classList.add('active');
+      document.getElementById('panel-' + name).classList.add('active');
+    }
+
+    /* ----------------------------------------------------------------
+       MUSIC PLAYER
+       ---------------------------------------------------------------- */
+    const audio = document.getElementById('audio-el');
+    const playBtn = document.getElementById('playBtn');
+    const iconPlay = document.getElementById('icon-play');
+    const iconPause = document.getElementById('icon-pause');
+    const eqEl = document.getElementById('equalizer');
+    const progFill = document.getElementById('progressFill');
+    const progressBar = document.getElementById('progressBar');
+    const toast = document.getElementById('toast');
+    let isPlaying = false;
+    let fakeProgress = 0;
+    let fakeTimer = null;
+
+    function showToast(msg) {
+      if (msg) toast.innerHTML = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function setPlaying(val) {
+      isPlaying = val;
+      iconPlay.style.display = val ? 'none' : 'block';
+      iconPause.style.display = val ? 'block' : 'none';
+      if (val) eqEl.classList.add('playing');
+      else eqEl.classList.remove('playing');
+      // updateSpinningCover is defined later — safe to call after script init
+      if (typeof updateSpinningCover === 'function') updateSpinningCover();
+    }
+
+    function startFakeProgress() {
+      // Animate progress bar over ~4 minutes (demo)
+      clearInterval(fakeTimer);
+      fakeTimer = setInterval(() => {
+        fakeProgress += 100 / (4 * 60 * 10); // 4 min, tick every 100ms
+        if (fakeProgress >= 100) { fakeProgress = 0; setPlaying(false); clearInterval(fakeTimer); }
+        progFill.style.width = fakeProgress + '%';
+      }, 100);
+    }
+
+    playBtn.addEventListener('click', () => {
+      // Try real audio first
+      if (audio.src && audio.src !== window.location.href) {
+        if (isPlaying) {
+          audio.pause();
+          setPlaying(false);
+          clearInterval(fakeTimer);
+        } else {
+          audio.play().then(() => {
+            setPlaying(true);
+          }).catch((err) => {
+            console.error(err);
+            showToast();
+          });
+        }
+      } else {
+        // No audio src — toggle visual only & show toast once
+        if (!isPlaying) {
+          showToast();
+          setPlaying(true);
+          startFakeProgress();
+        } else {
+          setPlaying(false);
+          clearInterval(fakeTimer);
+        }
+      }
+    });
+
+    // Click on progress bar to scrub
+    progressBar.addEventListener('click', e => {
+      const pct = e.offsetX / progressBar.offsetWidth;
+      if (audio.duration && !isNaN(audio.duration)) {
+        audio.currentTime = pct * audio.duration;
+        progFill.style.width = (pct * 100) + '%';
+      } else {
+        fakeProgress = pct * 100;
+        progFill.style.width = fakeProgress + '%';
+      }
+    });
+
+    // Sync real audio progress
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        progFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      }
+    });
+    audio.addEventListener('ended', () => {
+      setPlaying(false);
+      progFill.style.width = '0%';
+      clearInterval(fakeTimer);
+    });
+    // Playlist song selection
+    const playlistItems = document.querySelectorAll('.playlist-item');
+    const playerTitle = document.getElementById('playerTitle');
+    const playerArtist = document.getElementById('playerArtist');
+
+    function updatePlaylistActiveState(currentSrc) {
+      playlistItems.forEach(item => {
+        const itemSrc = item.dataset.src;
+        if (currentSrc && decodeURI(currentSrc).endsWith(itemSrc)) {
+          item.classList.add('active-song');
+        } else {
+          item.classList.remove('active-song');
+        }
+      });
+    }
+
+    function updateSpinningCover() {
+      playlistItems.forEach(item => {
+        const cover = item.querySelector('.playlist-cover');
+        if (!cover) return;
+        const src = item.dataset.src;
+        const isActive = audio.src && decodeURI(audio.src).endsWith(src);
+        if (isActive && isPlaying) {
+          cover.classList.add('spinning');
+        } else {
+          cover.classList.remove('spinning');
+        }
+      });
+    }
+
+    function playSong(item) {
+      const src = item.dataset.src;
+      const title = item.dataset.title;
+      const artist = item.dataset.artist;
+
+      if (playerTitle) playerTitle.textContent = title;
+      if (playerArtist) playerArtist.textContent = artist;
+
+      audio.src = encodeURI(src);
+      updatePlaylistActiveState(src);
+
+      audio.play().then(() => {
+        setPlaying(true);
+        updateSpinningCover();
+      }).catch(err => {
+        console.warn('Cannot play audio:', err);
+        showToast(`🎵 File <strong>${src}</strong> belum ada di folder`);
+        setPlaying(false);
+        updateSpinningCover();
+      });
+    }
+
+    playlistItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const src = item.dataset.src;
+        if (audio.src && decodeURI(audio.src).endsWith(src)) {
+          if (isPlaying) {
+            audio.pause();
+            setPlaying(false);
+            updateSpinningCover();
+          } else {
+            audio.play().then(() => {
+              setPlaying(true);
+              updateSpinningCover();
+            }).catch(() => {
+              showToast(`🎵 File <strong>${src}</strong> belum ada di folder`);
+            });
+          }
+        } else {
+          playSong(item);
+        }
+      });
+    });
+
+    // updateSpinningCover is merged into setPlaying above; this block cleans up
+    // (remove duplicate setPlaying override)
+
+
+    if (audio.src) {
+      updatePlaylistActiveState(audio.src);
+    }
+
+    /* ----------------------------------------------------------------
+       CONTACT FORM
+       ---------------------------------------------------------------- */
+    const contactForm = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+
+    if (contactForm) {
+      contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById('cf-name').value.trim();
+        const message = document.getElementById('cf-message').value.trim();
+
+        if (!name || !message) return;
+
+        // Simulate send (no backend — just show success state)
+        const btn = contactForm.querySelector('.form-submit');
+        btn.textContent = 'Mengirim…';
+        btn.disabled = true;
+
+        setTimeout(() => {
+          contactForm.style.display = 'none';
+          formSuccess.style.display = 'block';
+        }, 900);
+      });
+    }
+  </script>
+
+</body>
+
+</html>
